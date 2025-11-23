@@ -1,4 +1,3 @@
-#include <algorithm>
 #include <array>
 #include <memory>
 #include <print>
@@ -11,8 +10,6 @@
 #include <boost/cobalt/detached.hpp>
 #include <boost/cobalt/op.hpp>
 #include <boost/cobalt/promise.hpp>
-
-#include <sys/socket.h>
 
 using boost::asio::ip::tcp;
 constexpr uint16_t port = 31415U;
