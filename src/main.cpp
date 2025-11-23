@@ -23,7 +23,7 @@ boost::cobalt::detached resendData(SocketPtr socket)
 {
     std::array<char, 1024> arrBuffer{};
 
-    auto buffer = boost::asio::buffer(arrBuffer);
+    auto buffer   = boost::asio::buffer(arrBuffer);
     auto sizeRead = co_await socket->async_read_some(buffer, boost::cobalt::use_op);
 
     std::println("Read {} bytes of data", sizeRead);
@@ -60,7 +60,7 @@ boost::cobalt::main co_main(int, char**)
     std::println("Hello there!");
 
     auto executor    = boost::cobalt::this_coro::executor;
-    auto endpoint = tcp::endpoint(tcp::v4(), port);
+    auto endpoint    = tcp::endpoint(tcp::v4(), port);
     auto acceptorPtr = std::make_unique<tcp::acceptor>(tcp::acceptor(co_await executor, endpoint));
 
     co_await acceptConnections(std::move(acceptorPtr));
