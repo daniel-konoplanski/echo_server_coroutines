@@ -1,4 +1,5 @@
 #include <array>
+#include <exception>
 #include <memory>
 #include <print>
 
@@ -19,21 +20,28 @@ using SocketPtr         = std::unique_ptr<tcp::socket>;
 boost::cobalt::detached resendData(SocketPtr socket)
 {
     std::array<char, 1024> arrBuffer{};
+    auto buffer = boost::asio::buffer(arrBuffer);
 
-    auto buffer   = boost::asio::buffer(arrBuffer);
-    auto sizeRead = co_await socket->async_read_some(buffer, boost::cobalt::use_op);
+    while (true)
+    {
+        try
+        {
+            auto sizeRead = co_await socket->async_read_some(buffer, boost::cobalt::use_op);
 
-    std::println("Read {} bytes of data", sizeRead);
+            std::println("Read {} bytes of data", sizeRead);
 
-    auto sizeWrite = co_await socket->async_write_some(buffer, boost::cobalt::use_op);
+            auto sizeWrite = co_await socket->async_write_some(buffer, boost::cobalt::use_op);
 
-    std::println("Wrote {} bytes of data", sizeWrite);
+            std::println("Wrote {} bytes of data", sizeWrite);
 
-    arrBuffer = {};
-
-    resendData(std::move(socket));
-
-    co_return;
+            arrBuffer = {};
+        }
+        catch(const std::exception& ex)
+        {
+            std::println("Catched an exception: {}", ex.what());
+            break;
+        }
+    }
 }
 
 boost::cobalt::promise<void> acceptConnections(AcceptorPtr acceptor)
